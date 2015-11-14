@@ -3,6 +3,7 @@ import sys
 sys.path.append('../')
 from aws_ec2_operations import *
 from ConfigParser import SafeConfigParser
+from fabric_helper import *
 
 class test_aws_ec2_ops(unittest.TestCase):
     ec2 = None
@@ -26,3 +27,7 @@ class test_aws_ec2_ops(unittest.TestCase):
 
         for instance in instances:
             self.assertEqual(config.get('main', instance), self.ec2.getInstance(instance).ip_address)
+
+    # def test_remote_instances_login(self):
+    #     output = remote_host_command_output(host_ip = '52.33.114.9', host_user = 'ubuntu', host_key_file = "~/.ssh/hadoopec2cluster.pem")
+    #     self.assertEqual('52.33.114.9', output)

@@ -54,7 +54,7 @@
       <file leaf-file-name="test_aws_ec2_ops.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_aws_ec2_ops.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
+            <state vertical-scroll-proportion="0.0" vertical-offset="52" max-vertical-offset="510">
               <caret line="21" column="98" selection-start-line="21" selection-start-column="98" selection-end-line="21" selection-end-column="98" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
@@ -100,8 +100,8 @@
       <file leaf-file-name="fabfile.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/fabfile.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6877729" vertical-offset="0" max-vertical-offset="540">
-              <caret line="21" column="30" selection-start-line="21" selection-start-column="30" selection-end-line="21" selection-end-column="30" />
+            <state vertical-scroll-proportion="0.6069869" vertical-offset="112" max-vertical-offset="570">
+              <caret line="26" column="72" selection-start-line="26" selection-start-column="72" selection-end-line="26" selection-end-column="72" />
               <folding>
                 <element signature="e#28#48#0" expanded="true" />
               </folding>
@@ -484,7 +484,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_aws_ec2_ops.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="510">
+        <state vertical-scroll-proportion="0.0" vertical-offset="52" max-vertical-offset="510">
           <caret line="21" column="98" selection-start-line="21" selection-start-column="98" selection-end-line="21" selection-end-column="98" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
@@ -502,8 +502,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/fabfile.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6877729" vertical-offset="0" max-vertical-offset="540">
-          <caret line="21" column="30" selection-start-line="21" selection-start-column="30" selection-end-line="21" selection-end-column="30" />
+        <state vertical-scroll-proportion="0.6069869" vertical-offset="112" max-vertical-offset="570">
+          <caret line="26" column="72" selection-start-line="26" selection-start-column="72" selection-end-line="26" selection-end-column="72" />
           <folding>
             <element signature="e#28#48#0" expanded="true" />
           </folding>

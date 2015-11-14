@@ -1,6 +1,7 @@
 __author__ = 'rakesh.varma'
 import boto.ec2
-
+from ConfigParser import SafeConfigParser
+import time
 
 class aws_ec2_operations:
 
@@ -17,6 +18,7 @@ class aws_ec2_operations:
         return None
 
     def create_instances(self, image_id, key_name, instance_type, security_group, instances):
+        #create ec2 instances.
         reservation = self.ec2.run_instances(
                                                 image_id = image_id,
                                                 key_name = key_name,
@@ -26,5 +28,20 @@ class aws_ec2_operations:
                                                 max_count = len(instances)
         )
 
-        for i, instance in enumerate(reservation.instances):
-            instance.add_tag("Name", instances[i])
+        time.sleep(10)
+        #add tags to the created instances.
+        for index, instance in enumerate(reservation.instances):
+            instance.add_tag("Name", instances[index])
+
+
+        time.sleep(10)
+        #update the aws_hadoop.hosts file with the instance tag and the public ip address.
+        c = SafeConfigParser()
+        c.add_section("main")
+        hadoop_cfgfile = open("aws_hadoop.hosts", 'w')
+
+        for instance in instances:
+            inst = self.getInstance(instance)
+            c.set("main",instance, str(inst.ip_address))
+        c.write(hadoop_cfgfile)
+        hadoop_cfgfile.close()

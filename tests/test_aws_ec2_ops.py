@@ -2,7 +2,6 @@ import unittest
 import sys
 sys.path.append('../')
 from aws_ec2_operations import *
-import boto
 from ConfigParser import SafeConfigParser
 
 class test_aws_ec2_ops(unittest.TestCase):
@@ -17,3 +16,11 @@ class test_aws_ec2_ops(unittest.TestCase):
         instances = ['saltmaster', 'hadoopnamenode', 'hadoopsecondarynamenode', 'hadoopslave1', 'hadoopslave2']
         for instance in instances:
             self.assertEqual(instance, self.ec2.getInstance(instance).tags['Name'])
+
+    def test_hadoop_hosts_file(self):
+        config = SafeConfigParser()
+        config.read('aws_hadoop.hosts')
+        instances = ['saltmaster', 'hadoopnamenode', 'hadoopsecondarynamenode', 'hadoopslave1', 'hadoopslave2']
+
+        for instance in instances:
+            self.assertEqual(config.get('main', instance), self.ec2.getInstance(instance).ip_address)

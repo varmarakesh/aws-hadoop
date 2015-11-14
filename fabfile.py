@@ -28,7 +28,7 @@ def git_commit_push(msg):
     local('git add .')
     #local('git rm --cached config.ini')
     local('git commit -m "{0}"'.format(msg))
-    local('git remote set-url origin git@github.com:varmarakesh/gittest.git')
+    local('git remote set-url origin git@github.com:varmarakesh/aws-hadoop.git')
     local('git push origin master')
     local('git status')
     local('git log --oneline')

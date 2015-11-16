@@ -17,7 +17,7 @@ class test_salt_install(unittest.TestCase):
 
     def test_salt_ping(self):
         """Validates are all salt minions are responding to the ping"""
-        saltmaster = self.config.get("main", "saltmaster")
+        saltmaster = eval(self.config.get("main", "saltmaster"))['ip_address']
         fb = fabric_helper(host_ip = saltmaster, host_user = self.host_user, host_key_file = self.host_key_file)
         salt_output = fb.run_salt_master_ping()
         self.assertTrue(eval(salt_output)['hadoopnamenode'])

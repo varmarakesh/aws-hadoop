@@ -34,7 +34,7 @@ def git_commit_push(msg):
 
 @task
 def salt_master_install():
-    env.host_string = config.get("main", "saltmaster")
+    env.host_string = eval(config.get("main", "saltmaster"))['ip_address']
     env.user = 'ubuntu'
     env.key_filename = "~/.ssh/hadoopec2cluster.pem"
     sudo('add-apt-repository -y ppa:saltstack/salt')
@@ -47,13 +47,13 @@ def salt_master_install():
 def salt_minion_install():
     hosts = ['hadoopnamenode','hadoopsecondarynamenode', 'hadoopslave1', 'hadoopslave2']
     for host in hosts:
-        env.host_string = config.get('main', host)
+        env.host_string = eval(config.get('main', host))['ip_address']
         env.user = 'ubuntu'
         env.key_filename = "~/.ssh/hadoopec2cluster.pem"
         sudo('add-apt-repository -y ppa:saltstack/salt')
         sudo('apt-get update')
         sudo('apt-get install -y salt-minion')
-        cmd = 'echo "master: {0}" > /etc/salt/minion'.format(config.get('main', 'saltmaster'))
+        cmd = 'echo "master: {0}" > /etc/salt/minion'.format(eval(config.get('main', 'saltmaster'))['ip_address'])
         sudo(cmd)
         sudo('echo "id: {0}" >> /etc/salt/minion'.format(host))
         sudo('service --status-all 2>&1 | grep salt')
@@ -61,7 +61,7 @@ def salt_minion_install():
 
 @task
 def salt_master_keys_accept():
-    env.host_string = config.get("main", "saltmaster")
+    env.host_string = eval(config.get('main', 'saltmaster'))['ip_address']
     env.user = 'ubuntu'
     env.key_filename = "~/.ssh/hadoopec2cluster.pem"
     sudo('salt-key -L')

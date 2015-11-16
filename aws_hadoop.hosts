@@ -1,7 +1,7 @@
 [main]
-saltmaster = 52.33.78.115
-hadoopnamenode = 52.33.110.24
-hadoopsecondarynamenode = 52.33.111.224
-hadoopslave1 = 52.27.183.225
-hadoopslave2 = 52.33.125.221
+saltmaster = {'private_ip_address': u'172.31.30.215', 'dns_name': u'ec2-52-27-183-78.us-west-2.compute.amazonaws.com', 'ip_address': u'52.27.183.78'}
+hadoopnamenode = {'private_ip_address': u'172.31.30.219', 'dns_name': u'ec2-52-33-88-54.us-west-2.compute.amazonaws.com', 'ip_address': u'52.33.88.54'}
+hadoopsecondarynamenode = {'private_ip_address': u'172.31.30.218', 'dns_name': u'ec2-52-32-78-196.us-west-2.compute.amazonaws.com', 'ip_address': u'52.32.78.196'}
+hadoopslave1 = {'private_ip_address': u'172.31.30.217', 'dns_name': u'ec2-52-32-72-217.us-west-2.compute.amazonaws.com', 'ip_address': u'52.32.72.217'}
+hadoopslave2 = {'private_ip_address': u'172.31.30.216', 'dns_name': u'ec2-52-27-57-225.us-west-2.compute.amazonaws.com', 'ip_address': u'52.27.57.225'}
 

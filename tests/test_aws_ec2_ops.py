@@ -20,10 +20,13 @@ class test_aws_ec2_ops(unittest.TestCase):
             self.assertEqual(instance, self.ec2.getInstance(instance).tags['Name'])
 
     def test_hadoop_hosts_file(self):
-        """Validating aws_hadoop.hosts file ip addresses with actual ec2 instance ip addresses."""
+        """Validating aws_hadoop.hosts file with actual ec2 instance details (public ip address, private ip address and dns name)."""
         config = SafeConfigParser()
         config.read('aws_hadoop.hosts')
         instances = ['saltmaster', 'hadoopnamenode', 'hadoopsecondarynamenode', 'hadoopslave1', 'hadoopslave2']
 
         for instance in instances:
-            self.assertEqual(config.get('main', instance), self.ec2.getInstance(instance).ip_address)
+            instance_details = eval(config.get('main', instance))
+            self.assertEqual(instance_details['ip_address'], self.ec2.getInstance(instance).ip_address)
+            self.assertEqual(instance_details['private_ip_address'], self.ec2.getInstance(instance).private_ip_address)
+            self.assertEqual(instance_details['dns_name'], self.ec2.getInstance(instance).dns_name)

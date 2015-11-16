@@ -42,6 +42,7 @@ class aws_ec2_operations:
 
         for instance in instances:
             inst = self.getInstance(instance)
-            c.set("main",instance, str(inst.ip_address))
+            d = {'private_ip_address':inst.private_ip_address, 'ip_address':inst.ip_address, 'dns_name':inst.dns_name}
+            c.set("main",instance, str(d))
         c.write(hadoop_cfgfile)
         hadoop_cfgfile.close()

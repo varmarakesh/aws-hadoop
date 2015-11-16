@@ -4,8 +4,7 @@ from ConfigParser import SafeConfigParser
 
 config = SafeConfigParser()
 config.read('aws_hadoop.hosts')
-#env.user = 'ubuntu'
-#env.key_filename = "~/.ssh/hadoopec2cluster.pem"
+
 @task
 def create_hadoop_cluster():
     local('python hadoop_cluster.py')
@@ -54,8 +53,9 @@ def salt_minion_install():
         sudo('add-apt-repository -y ppa:saltstack/salt')
         sudo('apt-get update')
         sudo('apt-get install -y salt-minion')
-        sudo('echo "master:{0} > /etc/salt/minion"'.format(config.get('main', 'saltmaster')))
-        sudo('echo "id:{0} >> /etc/salt/minion"'.format(host))
+        cmd = 'echo "master: {0}" > /etc/salt/minion'.format(config.get('main', 'saltmaster'))
+        sudo(cmd)
+        sudo('echo "id: {0}" >> /etc/salt/minion'.format(host))
         sudo('service --status-all 2>&1 | grep salt')
         sudo('service salt-minion restart')
 
@@ -67,10 +67,7 @@ def salt_master_keys_accept():
     sudo('salt-key -L')
     sudo('salt-key -y --accept-all')
 
-def remote_test():
-    env.host_string = '52.33.114.9'
-    env.user = 'ubuntu'
-    env.key_filename = "~/.ssh/hadoopec2cluster.pem"
+@task
+def test_salt():
+    local('python -m unittest -v tests.test_salt_install')
 
-    output = run('hostname -i')['<local-only>']
-    return output

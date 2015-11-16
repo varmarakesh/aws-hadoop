@@ -1,7 +1,7 @@
 [main]
-saltmaster = 52.33.238.59
-hadoopnamenode = 52.33.87.64
-hadoopsecondarynamenode = 52.33.233.209
-hadoopslave1 = 52.33.172.37
-hadoopslave2 = 52.32.185.15
+saltmaster = 52.33.78.115
+hadoopnamenode = 52.33.110.24
+hadoopsecondarynamenode = 52.33.111.224
+hadoopslave1 = 52.27.183.225
+hadoopslave2 = 52.33.125.221
 

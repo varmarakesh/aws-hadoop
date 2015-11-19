@@ -5,7 +5,7 @@ from ConfigParser import SafeConfigParser
 from fabric_helper import *
 import ast
 
-class test_salt_install(unittest.TestCase):
+class test_hadoop_nodes_public_access(unittest.TestCase):
     config = SafeConfigParser()
     host_user = None
     host_key_file = None
@@ -15,17 +15,11 @@ class test_salt_install(unittest.TestCase):
         self.host_user = 'ubuntu'
         self.host_key_file = "~/.ssh/hadoopec2cluster.pem"
 
-
-    def test_salt_ping(self):
-        """Validates are all salt minions are responding to the ping"""
+    def test_hostnames(self):
         main_config = SafeConfigParser()
         main_config.read('config.ini')
-        saltmaster = eval(self.config.get("main", "saltmaster"))['ip_address']
-        fb = fabric_helper(host_ip = saltmaster, host_user = self.host_user, host_key_file = self.host_key_file)
-        salt_output = fb.run_salt_master_ping()
         hosts = ast.literal_eval(main_config.get('main','hadoop_nodes'))
         for host in hosts:
-            self.assertTrue(eval(salt_output)[host])
-
-
-
+            host_ip = eval(self.config.get("main", host))['ip_address']
+            fb = fabric_helper(host_ip = host_ip, host_user = self.host_user, host_key_file = self.host_key_file)
+            self.assertEqual(fb.run_remote_command('hostname'), eval(self.config.get("main", host))['dns_name'])

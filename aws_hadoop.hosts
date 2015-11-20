@@ -1,7 +1,7 @@
 [main]
-hadoopnamenode = {'private_ip_address': u'172.31.22.2', 'dns_name': u'ec2-52-34-51-9.us-west-2.compute.amazonaws.com', 'ip_address': u'52.34.51.9'}
-hadoopsecondarynamenode = {'private_ip_address': u'172.31.22.1', 'dns_name': u'ec2-52-34-78-213.us-west-2.compute.amazonaws.com', 'ip_address': u'52.34.78.213'}
-hadoopdataslave1 = {'private_ip_address': u'172.31.22.0', 'dns_name': u'ec2-52-34-66-227.us-west-2.compute.amazonaws.com', 'ip_address': u'52.34.66.227'}
-hadoopdataslave2 = {'private_ip_address': u'172.31.22.3', 'dns_name': u'ec2-52-26-7-225.us-west-2.compute.amazonaws.com', 'ip_address': u'52.26.7.225'}
-saltmaster = {'private_ip_address': u'172.31.22.4', 'dns_name': u'ec2-52-34-76-87.us-west-2.compute.amazonaws.com', 'ip_address': u'52.34.76.87'}
+hadoopnamenode = {'private_ip_address': u'172.31.24.214', 'dns_name': u'ec2-52-33-91-140.us-west-2.compute.amazonaws.com', 'ip_address': u'52.33.91.140'}
+hadoopsecondarynamenode = {'private_ip_address': u'172.31.24.216', 'dns_name': u'ec2-52-33-102-88.us-west-2.compute.amazonaws.com', 'ip_address': u'52.33.102.88'}
+hadoopdataslave1 = {'private_ip_address': u'172.31.24.215', 'dns_name': u'ec2-52-32-186-177.us-west-2.compute.amazonaws.com', 'ip_address': u'52.32.186.177'}
+hadoopdataslave2 = {'private_ip_address': u'172.31.24.218', 'dns_name': u'ec2-52-32-10-213.us-west-2.compute.amazonaws.com', 'ip_address': u'52.32.10.213'}
+saltmaster = {'private_ip_address': u'172.31.24.217', 'dns_name': u'ec2-52-33-35-63.us-west-2.compute.amazonaws.com', 'ip_address': u'52.33.35.63'}
 

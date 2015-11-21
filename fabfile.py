@@ -4,6 +4,7 @@ from ConfigParser import SafeConfigParser
 import ast
 from config_operations import *
 from node_operations import *
+import time
 
 
 host_config = SafeConfigParser()
@@ -44,6 +45,7 @@ def git_commit_push(msg):
 
 @task
 def salt_master_install():
+    time.sleep(10)
     env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
@@ -93,15 +95,15 @@ def hadoop_nodes_setup_access():
         #Changing the host name of hadoop nodes to EC2 public dns name.
         cmd_change_hostname = 'hostname {0}'.format(hadoop_cluster.getNode(host).dns_name)
         sudo(cmd_change_hostname)
-        #Changing /etc/hosts file to remove localhost and replacing it with the private ip.
-        sudo('sed -e "s/localhost/{0}/" /etc/hosts'.format(hadoop_cluster.getNode(host).dns_name))
-        sudo('sed -e "s/127.0.0.1/{0}/" /etc/hosts'.format(hadoop_cluster.getNode(host).private_ip_address))
-        #sudo('echo {0} >> /home/ubuntu/.ssh/config'.format("Host *"))
-        #sudo('echo {0} >> /home/ubuntu/.ssh/config'.format("    StrictHostKeyChecking no"))
+        #Changing /etc/hosts file to remove localhost and replacing it with the public dns name and 127.0.0.1 with localip.
+        sudo('sed -i -e "s/localhost/{0}/" /etc/hosts'.format(hadoop_cluster.getNode(host).dns_name))
+        sudo('sed -i -e "s/127.0.0.1/{0}/" /etc/hosts'.format(hadoop_cluster.getNode(host).private_ip_address))
 
 
     # Setting up passwordless login from hadoopnamenode to all other hadoop nodes.
     env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
+    #generating ssh keys in id_rsa, no passphrase.
+    run('ssh-keygen -t rsa -f /home/ubuntu/.ssh/id_rsa -q -N ""')
     #Getting public key from hadoopnamenode
     public_key = sudo('cat /home/ubuntu/.ssh/id_rsa.pub')
 
@@ -117,10 +119,10 @@ def test_hadoop_nodes_public_access():
     local('python -m unittest -v tests.test_hadoop_nodes_public_access')
 
 @task
-def install_jdk_hadoop_nodes():
-    env.host_string = eval(host_config.get('main', 'saltmaster'))['ip_address']
-    env.user = 'ubuntu'
-    env.key_filename = "~/.ssh/hadoopec2cluster.pem"
+def hadoop_nodes_jdk_install():
+    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
     with settings(warn_only = True):
         sudo('salt "*" cmd.run "sudo apt-get update"')
         sudo('salt "*" cmd.run "sudo add-apt-repository ppa:webupd8team/java"')
@@ -131,19 +133,22 @@ def install_jdk_hadoop_nodes():
 
 @task
 def test_java():
-    env.host_string = eval(host_config.get('main', 'saltmaster'))['ip_address']
-    env.user = 'ubuntu'
-    env.key_filename = "~/.ssh/hadoopec2cluster.pem"
+    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
     sudo('salt "*" cmd.run "java -version"')
 
 @task
-def install_hadoop():
+def hadoop_install():
     env.host_string = eval(host_config.get('main', 'saltmaster'))['ip_address']
     env.user = 'ubuntu'
     env.key_filename = "~/.ssh/hadoopec2cluster.pem"
     sudo('salt "*" cmd.run "wget http://apache.mirror.gtcomm.net/hadoop/common/current/hadoop-2.7.1.tar.gz -P /home/ubuntu"')
     sudo('salt "*" cmd.run "tar -xzvf /home/ubuntu/hadoop-2.7.1.tar.gz -C /home/ubuntu"')
     sudo('salt "*" cmd.run "mv /home/ubuntu/hadoop-2.7.1 /home/ubuntu/hadoop"')
+    sudo('salt "*" cmd.run "rm -rf /home/ubuntu/hadoop-2.7.1.tar.gz"')
+    #changing the hadoop directory owner to ubuntu.
+    sudo('salt "*" cmd.run "sudo chown -R ubuntu /home/ubuntu/hadoop"')
     cmd = "echo '{0}' >> /home/ubuntu/.bashrc".format("export HADOOP_CONF=/home/ubuntu/hadoop/etc/hadoop")
     sudo('salt "*" cmd.run "{0}"'.format(cmd))
     cmd = "echo '{0}' >> /home/ubuntu/.bashrc".format("export HADOOP_PREFIX=/home/ubuntu/hadoop")
@@ -155,9 +160,9 @@ def install_hadoop():
 
 @task
 def clean_install_hadoop():
-    env.host_string = eval(host_config.get('main', 'saltmaster'))['ip_address']
-    env.user = 'ubuntu'
-    env.key_filename = "~/.ssh/hadoopec2cluster.pem"
+    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
     sudo('salt "*" cmd.run "rm -rf /home/ubuntu/hadoop"')
     sudo('salt "*" cmd.run "rm -f /home/ubuntu/hadoop-2.7.1.tar.gz"')
     sudo('salt "*" cmd.run "wget http://apache.mirror.gtcomm.net/hadoop/common/current/hadoop-2.7.1.tar.gz -P /home/ubuntu"')
@@ -166,9 +171,9 @@ def clean_install_hadoop():
 
 @task
 def test_hadoop():
-    env.host_string = eval(host_config.get('main', 'saltmaster'))['ip_address']
-    env.user = 'ubuntu'
-    env.key_filename = "~/.ssh/hadoopec2cluster.pem"
+    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
     sudo('salt "*" cmd.run "ls -lt /home/ubuntu/hadoop"')
     sudo('salt "*" cmd.run "ls -lt /usr/lib/jvm/java-7-oracle"')
     sudo('salt "*" cmd.run "echo $HADOOP_CONF"')
@@ -176,16 +181,16 @@ def test_hadoop():
 
 
 @task
-def deploy_hadoop_files():
-    hadoopnamenode = eval(host_config.get('main', 'hadoopnamenode'))['dns_name']
+def hadoop_config_deploy():
+    hadoopnamenode = hadoop_cluster.getNode(c.hadoop_namenode).dns_name
 
-    hadoop_env_command = "sed -i s/'${JAVA_HOME}'/'\\\/usr\\\/lib\\\/jvm\\\/java-7-oracle'/ /home/ubuntu/hadoop/etc/hadoop/hadoop-env.sh"
-    core_site_text = """<?xml version="1.0" encoding="UTF-8"?>
-                        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+    hadoop_env_command = "sed -i -e s/'\\\${JAVA_HOME}'/'\\\/usr\\\/lib\\\/jvm\\\/java-7-oracle'/ /home/ubuntu/hadoop/etc/hadoop/hadoop-env.sh"
+    core_site_text = """<?xml version=\\""1.0\\"" encoding=\\""UTF-8\\""?>
+                        <?xml-stylesheet type=\\""text/xsl\\"" href=\\""configuration.xsl\\""?>
                         <configuration>
                         <property>
                         <name>fs.default.name</name>
-                        <value>{0}:8020</value>
+                        <value>hdfs://{0}:8020</value>
                         </property>
                         <property>
                         <name>hadoop.tmp.dir</name>
@@ -193,8 +198,8 @@ def deploy_hadoop_files():
                         </property>
                         </configuration>""".format(hadoopnamenode)
 
-    hdfs_site_text ="""<?xml version="1.0" encoding="UTF-8"?>
-                        <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+    hdfs_site_text = """<?xml version=\\""1.0\\"" encoding=\\""UTF-8\\""?>
+                        <?xml-stylesheet type=\\""text/xsl\\"" href=\\""configuration.xsl\\""?>
                         <configuration>
                         <property>
                         <name>dfs.replication</name>
@@ -205,28 +210,54 @@ def deploy_hadoop_files():
                         <value>false</value>
                         </property>
                         </configuration>"""
-    mapred_site_text ="""<configuration>
+    mapred_site_text ="""<?xml version=\\""1.0\\"" encoding=\\""UTF-8\\""?>
+                        <?xml-stylesheet type=\\""text/xsl\\"" href=\\""configuration.xsl\\""?>
+                        <configuration>
                         <property>
                         <name>mapred.job.tracker</name>
-                        <value>{0}:8021</value>
+                        <value>hdfs://{0}:8021</value>
                         </property>
                         </configuration>""".format(hadoopnamenode)
 
 
-    env.host_string = eval(host_config.get('main', 'saltmaster'))['ip_address']
-    env.user = 'ubuntu'
-    env.key_filename = "~/.ssh/hadoopec2cluster.pem"
-    #sudo('salt "*" cmd.run "{0}"'.format(hadoop_env_command))
-    #sudo(hadoop_env_command)
+    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
+    sudo('salt "*" cmd.run "{0}"'.format(hadoop_env_command))
     core_site_command = "echo '{0}' > /home/ubuntu/hadoop/etc/hadoop/core-site.xml".format(core_site_text)
     sudo('salt "*" cmd.run "{0}"'.format(core_site_command))
     hdfs_site_command = "echo '{0}' > /home/ubuntu/hadoop/etc/hadoop/hdfs-site.xml".format(hdfs_site_text)
     sudo('salt "*" cmd.run "{0}"'.format(hdfs_site_command))
     mapred_site_command = "echo '{0}' > /home/ubuntu/hadoop/etc/hadoop/mapred-site.xml".format(mapred_site_text)
     sudo('salt "*" cmd.run "{0}"'.format(mapred_site_command))
-    #sudo('echo {0} > /home/ubuntu/hadoop/etc/hadoop/core-site.xml'.format(core_site_text))
-    #sudo('echo {0} > /home/ubuntu/hadoop/etc/hadoop/hdfs-site.xml'.format(hdfs_site_text))
-    #sudo('echo {0} > /home/ubuntu/hadoop/etc/hadoop/mapred-site.xml'.format(mapred_site_text))
 
+@task
+def hadoop_master_slave_setup():
+    env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
+    sudo("echo {0} > /home/ubuntu/hadoop/etc/hadoop/masters".format(hadoop_cluster.getNode(c.hadoop_namenode).dns_name))
+    sudo("echo {0} >> /home/ubuntu/hadoop/etc/hadoop/masters".format(hadoop_cluster.getNode(c.hadoop_secondary_namenode).dns_name))
+    sudo(">/home/ubuntu/hadoop/etc/hadoop/slaves")
+    for slave in c.hadoop_slaves:
+        sudo("echo {0} >> /home/ubuntu/hadoop/etc/hadoop/slaves".format(hadoop_cluster.getNode(slave).dns_name))
 
+    env.host_string = hadoop_cluster.getNode(c.hadoop_secondary_namenode).ip_address
+    sudo("echo {0} > /home/ubuntu/hadoop/etc/hadoop/masters".format(hadoop_cluster.getNode(c.hadoop_namenode).dns_name))
+    sudo("echo {0} >> /home/ubuntu/hadoop/etc/hadoop/masters".format(hadoop_cluster.getNode(c.hadoop_secondary_namenode).dns_name))
+    sudo(">/home/ubuntu/hadoop/etc/hadoop/slaves")
+    for slave in c.hadoop_slaves:
+        sudo("echo {0} >> /home/ubuntu/hadoop/etc/hadoop/slaves".format(hadoop_cluster.getNode(slave).dns_name))
 
+    for slave in c.hadoop_slaves:
+        env.host_string = hadoop_cluster.getNode(slave).ip_address
+        sudo("echo {0} > /home/ubuntu/hadoop/etc/hadoop/slaves".format(hadoop_cluster.getNode(slave).dns_name))
+
+@task
+def test_hadoop_master_slave_setup():
+    with settings(warn_only = True):
+        env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+        env.user = c.aws_user
+        env.key_filename = c.aws_key_location
+        sudo("salt '*' cmd.run 'cat /home/ubuntu/hadoop/etc/hadoop/masters'")
+        sudo("salt '*' cmd.run 'cat /home/ubuntu/hadoop/etc/hadoop/slaves'")

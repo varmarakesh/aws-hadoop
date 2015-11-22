@@ -59,6 +59,10 @@ class ConfigOps:
         return self.config.get("main", "aws_user")
 
     @property
+    def saltmaster(self):
+        return self.config.get("main","salt_master")
+
+    @property
     def all_hadoop_nodes(self):
         nodes = []
         nodes.append(self.hadoop_namenode)
@@ -70,5 +74,5 @@ class ConfigOps:
     @property
     def all_nodes(self):
         nodes = self.all_hadoop_nodes
-        nodes.append("saltmaster")
+        nodes.append(self.saltmaster)
         return nodes

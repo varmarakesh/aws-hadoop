@@ -1,20 +1,36 @@
 __author__ = 'rakesh.varma'
 from fabric.api import *
-from ConfigParser import SafeConfigParser
-import ast
 from config_operations import *
 from node_operations import *
 import time
-
-
-host_config = SafeConfigParser()
-host_config.read('aws_hadoop.hosts')
-
-main_config = SafeConfigParser()
-main_config.read('config.ini')
+from fabric_helper import *
 
 c = ConfigOps()
 hadoop_cluster = HadoopCluster()
+
+def install_salt_master():
+    sudo('add-apt-repository -y ppa:saltstack/salt')
+    sudo('apt-get update')
+    sudo('apt-get install -y salt-master')
+    sudo('service --status-all 2>&1 | grep salt')
+    sudo('salt-key -L')
+
+def install_salt_minion(master, minion):
+    sudo('add-apt-repository -y ppa:saltstack/salt')
+    sudo('apt-get update')
+    sudo('apt-get install -y salt-minion')
+    cmd = 'echo "master: {0}" > /etc/salt/minion'.format(master)
+    sudo(cmd)
+    sudo('echo "id: {0}" >> /etc/salt/minion'.format(minion))
+    sudo('service --status-all 2>&1 | grep salt')
+    sudo('service salt-minion restart')
+
+def salt_master_keys_accept():
+    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
+    sudo('salt-key -L')
+    sudo('salt-key -y --accept-all')
 
 @task
 def create_hadoop_cluster():
@@ -44,42 +60,20 @@ def git_commit_push(msg):
     local('git log --oneline')
 
 @task
-def salt_master_install():
+def install_salt():
     time.sleep(10)
     env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
-    sudo('add-apt-repository -y ppa:saltstack/salt')
-    sudo('apt-get update')
-    sudo('apt-get install -y salt-master')
-    sudo('service --status-all 2>&1 | grep salt')
-    sudo('salt-key -L')
+    install_salt_master()
 
-@task
-def salt_minion_install():
 
     hosts = c.all_hadoop_nodes
-    env.user = c.aws_user
-    env.key_filename = c.aws_key_location
-
     for host in hosts:
         env.host_string = hadoop_cluster.getNode(host).ip_address
-        sudo('add-apt-repository -y ppa:saltstack/salt')
-        sudo('apt-get update')
-        sudo('apt-get install -y salt-minion')
-        cmd = 'echo "master: {0}" > /etc/salt/minion'.format(hadoop_cluster.getNode("saltmaster").ip_address)
-        sudo(cmd)
-        sudo('echo "id: {0}" >> /etc/salt/minion'.format(host))
-        sudo('service --status-all 2>&1 | grep salt')
-        sudo('service salt-minion restart')
+        install_salt_minion(master = hadoop_cluster.getNode("saltmaster").ip_address, minion = host)
 
-@task
-def salt_master_keys_accept():
-    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
-    env.user = c.aws_user
-    env.key_filename = c.aws_key_location
-    sudo('salt-key -L')
-    sudo('salt-key -y --accept-all')
+    salt_master_keys_accept()
 
 @task
 def test_salt():
@@ -107,7 +101,7 @@ def hadoop_nodes_setup_access():
     #Getting public key from hadoopnamenode
     public_key = sudo('cat /home/ubuntu/.ssh/id_rsa.pub')
 
-    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
 
     #Issuing a minion blast of public key to all hadoop nodes to enable passwordless login.
     minion_cmd = "echo '{0}' >> /home/ubuntu/.ssh/authorized_keys".format(public_key)
@@ -120,7 +114,7 @@ def test_hadoop_nodes_public_access():
 
 @task
 def hadoop_nodes_jdk_install():
-    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
     with settings(warn_only = True):
@@ -133,16 +127,16 @@ def hadoop_nodes_jdk_install():
 
 @task
 def test_java():
-    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
     sudo('salt "*" cmd.run "java -version"')
 
 @task
 def hadoop_install():
-    env.host_string = eval(host_config.get('main', 'saltmaster'))['ip_address']
-    env.user = 'ubuntu'
-    env.key_filename = "~/.ssh/hadoopec2cluster.pem"
+    env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
     sudo('salt "*" cmd.run "wget http://apache.mirror.gtcomm.net/hadoop/common/current/hadoop-2.7.1.tar.gz -P /home/ubuntu"')
     sudo('salt "*" cmd.run "tar -xzvf /home/ubuntu/hadoop-2.7.1.tar.gz -C /home/ubuntu"')
     sudo('salt "*" cmd.run "mv /home/ubuntu/hadoop-2.7.1 /home/ubuntu/hadoop"')
@@ -181,7 +175,7 @@ def test_hadoop():
 
 
 @task
-def hadoop_config_deploy():
+def deploy_hadoop_config():
     hadoopnamenode = hadoop_cluster.getNode(c.hadoop_namenode).dns_name
 
     hadoop_env_command = "sed -i -e s/'\\\${JAVA_HOME}'/'\\\/usr\\\/lib\\\/jvm\\\/java-7-oracle'/ /home/ubuntu/hadoop/etc/hadoop/hadoop-env.sh"
@@ -256,7 +250,7 @@ def hadoop_master_slave_setup():
 @task
 def test_hadoop_master_slave_setup():
     with settings(warn_only = True):
-        env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+        env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
         env.user = c.aws_user
         env.key_filename = c.aws_key_location
         sudo("salt '*' cmd.run 'cat /home/ubuntu/hadoop/etc/hadoop/masters'")

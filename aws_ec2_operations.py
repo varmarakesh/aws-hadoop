@@ -17,6 +17,18 @@ class aws_ec2_operations:
                     return instance
         return None
 
+    def update_tags(self, instances):
+        c = SafeConfigParser()
+        c.add_section("main")
+        hadoop_cfgfile = open("aws_hadoop.hosts", 'w')
+
+        for instance in instances:
+            inst = self.getInstance(instance)
+            d = {'private_ip_address':inst.private_ip_address, 'ip_address':inst.ip_address, 'dns_name':inst.dns_name}
+            c.set("main",instance, str(d))
+        c.write(hadoop_cfgfile)
+        hadoop_cfgfile.close()
+
     def create_instances(self, image_id, key_name, instance_type, security_group, instances):
         #create ec2 instances.
         reservation = self.ec2.run_instances(
@@ -36,13 +48,4 @@ class aws_ec2_operations:
 
         time.sleep(10)
         #update the aws_hadoop.hosts file with the instance tag and the public ip address.
-        c = SafeConfigParser()
-        c.add_section("main")
-        hadoop_cfgfile = open("aws_hadoop.hosts", 'w')
-
-        for instance in instances:
-            inst = self.getInstance(instance)
-            d = {'private_ip_address':inst.private_ip_address, 'ip_address':inst.ip_address, 'dns_name':inst.dns_name}
-            c.set("main",instance, str(d))
-        c.write(hadoop_cfgfile)
-        hadoop_cfgfile.close()
+        self.update_tags(instances)

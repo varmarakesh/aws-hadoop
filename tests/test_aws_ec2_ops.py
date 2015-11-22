@@ -32,3 +32,6 @@ class test_aws_ec2_ops(unittest.TestCase):
             self.assertEqual(node.ip_address, self.ec2.getInstance(node.name).ip_address)
             self.assertEqual(node.private_ip_address, self.ec2.getInstance(node.name).private_ip_address)
             self.assertEqual(node.dns_name, self.ec2.getInstance(node.name).dns_name)
+
+if __name__ == '__main__':
+    unittest.main()

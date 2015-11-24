@@ -23,7 +23,7 @@ class fabric_helper:
         sudo('salt-key -L')
 
 
-    def install_salt_minion(master, minion):
+    def install_salt_minion(self, master, minion):
         sudo('add-apt-repository -y ppa:saltstack/salt')
         sudo('apt-get update')
         sudo('apt-get install -y salt-minion')

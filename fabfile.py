@@ -10,12 +10,12 @@ hadoop_cluster = HadoopCluster()
 
 
 @task
-def create_hadoop_cluster():
+def create_aws_hadoop_cluster():
     local('python hadoop_cluster.py')
 
 @task
 def install_salt():
-    time.sleep(10)
+    time.sleep(20)
 
     #Install Salt Master
     fb = fabric_helper(
@@ -24,7 +24,7 @@ def install_salt():
         host_key_file = c.aws_key_location
     )
     fb.install_salt_master()
-
+    time.sleep(5)
     #Install Salt Minions
     hosts = c.all_hadoop_nodes
     for host in hosts:
@@ -34,7 +34,7 @@ def install_salt():
             host_key_file = c.aws_key_location
         )
         fb.install_salt_minion(master = hadoop_cluster.getNode(c.saltmaster).ip_address, minion = host)
-
+    time.sleep(5)
     #Accept Salt minions keys in Salt Master.
     fb = fabric_helper(
         host_ip  = hadoop_cluster.getNode(c.saltmaster).ip_address,
@@ -42,9 +42,11 @@ def install_salt():
         host_key_file = c.aws_key_location
     )
     fb.salt_master_keys_accept()
+    fb.run_salt_master_ping()
+    time.sleep(5)
 
 @task
-def hadoop_nodes_setup_access():
+def setup_hadoop_nodes_access():
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
     hosts = c.all_hadoop_nodes
@@ -70,10 +72,11 @@ def hadoop_nodes_setup_access():
     #Issuing a minion blast of public key to all hadoop nodes to enable passwordless login.
     minion_cmd = "echo '{0}' >> /home/ubuntu/.ssh/authorized_keys".format(public_key)
     sudo('salt "*" cmd.run "{0}"'.format(minion_cmd))
+    time.sleep(2)
 
 
 @task
-def hadoop_nodes_jdk_install():
+def install_jdk_hadoop_nodes():
     env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
@@ -86,7 +89,7 @@ def hadoop_nodes_jdk_install():
 
 
 @task
-def hadoop_install():
+def install_hadoop_packages():
     env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
@@ -158,7 +161,7 @@ def deploy_hadoop_config():
     sudo('salt "*" cmd.run "{0}"'.format(mapred_site_command))
 
 @task
-def hadoop_master_slave_setup():
+def setup_hadoop_master_slave():
     env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
@@ -178,4 +181,27 @@ def hadoop_master_slave_setup():
     for slave in c.hadoop_slaves:
         env.host_string = hadoop_cluster.getNode(slave).ip_address
         sudo("echo {0} > /home/ubuntu/hadoop/etc/hadoop/slaves".format(hadoop_cluster.getNode(slave).dns_name))
+
+
+@task
+def start_services_hadoop_master():
+    env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
+    sudo("/home/ubuntu/hadoop/bin/hadoop namenode -format")
+    sudo("/home/ubuntu/hadoop/sbin/start-dfs.sh")
+    sudo("jps")
+
+
+@task
+def provision_hadoop_cluster():
+    #execute(create_aws_hadoop_cluster)
+    execute(install_salt)
+    execute(setup_hadoop_nodes_access)
+    execute(install_jdk_hadoop_nodes)
+    execute(install_hadoop_packages)
+    execute(deploy_hadoop_config)
+    execute(setup_hadoop_master_slave)
+    execute(start_services_hadoop_master)
+
 

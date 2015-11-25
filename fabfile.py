@@ -188,14 +188,14 @@ def start_services_hadoop_master():
     env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
-    sudo("/home/ubuntu/hadoop/bin/hadoop namenode -format")
+    sudo("/home/ubuntu/hadoop/bin/hadoop namenode -format -force")
     sudo("/home/ubuntu/hadoop/sbin/start-dfs.sh")
     sudo("jps")
 
 
 @task
 def provision_hadoop_cluster():
-    #execute(create_aws_hadoop_cluster)
+    execute(create_aws_hadoop_cluster)
     execute(install_salt)
     execute(setup_hadoop_nodes_access)
     execute(install_jdk_hadoop_nodes)

@@ -6,13 +6,13 @@ hadoop packages and it is pre-requisites, setting up access between nodes and de
 ##Project goals
 
 
-1. Provision hadoop cluster in AWS EC2 with any number of nodes in less than 2 minutes.
+1. Provision hadoop cluster in AWS EC2 with any number of nodes in less than 5 minutes.
 2. Architect the solution so that it is easy to install and run. Create tests so that failures at each step can be easily diagnosed.
 3. Provide the user to configure various options such as number of slaves in hadoop cluster, aws instance type, aws region.
 
 ##Install Instructions
 
-1. Clone the project to your machine. Make sure git in install first.
+1. Clone the project to your machine. Make sure git is installed first.
     *   git --version
     *   git clone https://github.com/varmarakesh/aws-hadoop.git
 2. Verify python 2.7 in installed. Also verify pip is installed.

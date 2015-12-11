@@ -12,10 +12,11 @@ hadoop_cluster = HadoopCluster()
 @task
 def create_aws_hadoop_cluster():
     local('python hadoop_cluster.py')
+    hadoop_cluster = HadoopCluster()
 
 @task
 def install_salt():
-    time.sleep(20)
+    time.sleep(10)
 
     #Install Salt Master
     fb = fabric_helper(
@@ -64,6 +65,9 @@ def setup_hadoop_nodes_access():
     env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
     #generating ssh keys in id_rsa, no passphrase.
     run('ssh-keygen -t rsa -f /home/ubuntu/.ssh/id_rsa -q -N ""')
+    #adding StrictHostKeyChecking no in the .ssh/config file so that ssh login is not prompted.
+    run('echo "{0}" > /home/ubuntu/.ssh/config'.format("Host *"))
+    run('echo "{0}" >> /home/ubuntu/.ssh/config'.format("   StrictHostKeyChecking no"))
     #Getting public key from hadoopnamenode
     public_key = sudo('cat /home/ubuntu/.ssh/id_rsa.pub')
 
@@ -149,7 +153,7 @@ def deploy_hadoop_config():
                         </configuration>""".format(hadoopnamenode)
 
 
-    env.host_string = hadoop_cluster.getNode("saltmaster").ip_address
+    env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
     sudo('salt "*" cmd.run "{0}"'.format(hadoop_env_command))
@@ -189,9 +193,16 @@ def start_services_hadoop_master():
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
     sudo("/home/ubuntu/hadoop/bin/hadoop namenode -format -force")
-    sudo("/home/ubuntu/hadoop/sbin/start-dfs.sh")
+    run("/home/ubuntu/hadoop/sbin/start-dfs.sh")
     sudo("jps")
 
+@task
+def run_pi_test():
+    env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
+    with cd('/home/ubuntu/hadoop/share/hadoop/mapreduce'):
+        run('/home/ubuntu/hadoop/bin/hadoop jar hadoop-mapreduce-examples-2.7.1.jar pi 10 1000000')
 
 @task
 def provision_hadoop_cluster():

@@ -20,6 +20,10 @@ def test_hadoop_nodes_public_access():
     local('python -m unittest -v tests.test_hadoop_nodes_public_access')
 
 @task
+def test_environment():
+    local('python -m unittest -v tests.test_environment')
+
+@task
 def test_java():
     env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user

@@ -1,22 +1,36 @@
 __author__ = 'rakesh.varma'
-from fabric.api import *
 from config_operations import *
 from node_operations import *
 import time
 from fabric_helper import *
 
 c = ConfigOps()
-hadoop_cluster = HadoopCluster()
 
 
 @task
 def create_aws_hadoop_cluster():
     local('python hadoop_cluster.py')
+
+@task
+def update_config():
+    from ConfigParser import SafeConfigParser
+    c = SafeConfigParser()
+    c.add_section("main")
+    hadoop_cfgfile = open("aws_hadoop.hosts", 'w')
+    d = {'private_ip_address':'0:0:0:0', 'ip_address':'192.168.0.1', 'dns_name':'testbox'}
+    c.set("main",'hadoopnamenode', str(d))
+    c.write(hadoop_cfgfile)
+    hadoop_cfgfile.close()
+
+@task
+def test_config():
     hadoop_cluster = HadoopCluster()
+    print hadoop_cluster.getNode(c.hadoop_namenode).ip_address
 
 @task
 def install_salt():
-    time.sleep(10)
+    hadoop_cluster = HadoopCluster()
+    time.sleep(20)
 
     #Install Salt Master
     fb = fabric_helper(
@@ -48,6 +62,7 @@ def install_salt():
 
 @task
 def setup_hadoop_nodes_access():
+    hadoop_cluster = HadoopCluster()
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
     hosts = c.all_hadoop_nodes
@@ -81,6 +96,7 @@ def setup_hadoop_nodes_access():
 
 @task
 def install_jdk_hadoop_nodes():
+    hadoop_cluster = HadoopCluster()
     env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
@@ -94,6 +110,7 @@ def install_jdk_hadoop_nodes():
 
 @task
 def install_hadoop_packages():
+    hadoop_cluster = HadoopCluster()
     env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
@@ -115,6 +132,7 @@ def install_hadoop_packages():
 
 @task
 def deploy_hadoop_config():
+    hadoop_cluster = HadoopCluster()
     hadoopnamenode = hadoop_cluster.getNode(c.hadoop_namenode).dns_name
 
     hadoop_env_command = "sed -i -e s/'\\\${JAVA_HOME}'/'\\\/usr\\\/lib\\\/jvm\\\/java-7-oracle'/ /home/ubuntu/hadoop/etc/hadoop/hadoop-env.sh"
@@ -166,6 +184,7 @@ def deploy_hadoop_config():
 
 @task
 def setup_hadoop_master_slave():
+    hadoop_cluster = HadoopCluster()
     env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
@@ -189,15 +208,17 @@ def setup_hadoop_master_slave():
 
 @task
 def start_services_hadoop_master():
+    hadoop_cluster = HadoopCluster()
     env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
-    sudo("/home/ubuntu/hadoop/bin/hadoop namenode -format -force")
+    run("/home/ubuntu/hadoop/bin/hadoop namenode -format -force")
     run("/home/ubuntu/hadoop/sbin/start-dfs.sh")
-    sudo("jps")
+    run("jps")
 
 @task
 def run_pi_test():
+    hadoop_cluster = HadoopCluster()
     env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
@@ -214,5 +235,6 @@ def provision_hadoop_cluster():
     execute(deploy_hadoop_config)
     execute(setup_hadoop_master_slave)
     execute(start_services_hadoop_master)
+
 
 

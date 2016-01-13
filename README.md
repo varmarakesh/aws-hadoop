@@ -48,6 +48,9 @@ hadoop packages and it is pre-requisites, setting up access between nodes and de
 5. At this point, the setup is complete and you can begin your hadoop cluster provisioning by simply running.
     *   fab provision_hadoop_cluster
 
+##Architecture Diagram
+
+![Architecture](wiki/architecture_diagram.png "Architectural Diagram")
 ##Platform Tests
 
    So far, this has been successfully tested on the following platforms.

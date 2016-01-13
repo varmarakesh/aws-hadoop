@@ -226,8 +226,24 @@ def run_pi_test():
         run('/home/ubuntu/hadoop/bin/hadoop jar hadoop-mapreduce-examples-2.7.1.jar pi 10 1000000')
 
 @task
+def install_hive():
+    hadoop_cluster = HadoopCluster()
+    env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
+    with cd('/home/ubuntu/'):
+        run('wget http://apache.arvixe.com/hive/stable/apache-hive-1.2.1-bin.tar.gz')
+        run('tar -xzvf apache-hive-1.2.1-bin.tar.gz')
+        run('cd apache-hive-1.2.1-bin')
+        cmd = "echo '{0}' >> /home/ubuntu/.bashrc".format("export HIVE_HOME=/home/ubuntu/apache-hive-1.2.1-bin")
+        run(cmd)
+        cmd = "echo '{0}' >> /home/ubuntu/.bashrc".format("export PATH=$PATH:$HIVE_HOME/bin")
+        run(cmd)
+
+
+@task
 def provision_hadoop_cluster():
-    execute(create_aws_hadoop_cluster)
+    #execute(create_aws_hadoop_cluster)
     execute(install_salt)
     execute(setup_hadoop_nodes_access)
     execute(install_jdk_hadoop_nodes)

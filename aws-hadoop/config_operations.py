@@ -1,10 +1,11 @@
 __author__ = 'rakesh.varma'
+__author__ = 'rakesh.varma'
 from ConfigParser import *
 
 class ConfigOps:
-    def __init__(self):
+    def __init__(self, filepath):
         self.config = SafeConfigParser()
-        self.config.read('config.ini')
+        self.config.read(filepath)
 
     @property
     def hadoop_namenode(self):
@@ -21,42 +22,6 @@ class ConfigOps:
     def hadoop_slaves(self):
         hadoop_nodes =  eval(self.config.get("main", "hadoop_nodes"))
         return list(hadoop_nodes['slaves'])
-
-    @property
-    def aws_key_location(self):
-        return self.config.get("main", "aws_key_location")
-
-    @property
-    def aws_region(self):
-        return self.config.get("main", "aws_region")
-
-    @property
-    def aws_access_key_id(self):
-        return self.config.get("main", "aws_access_key_id")
-
-    @property
-    def aws_secret_access_key(self):
-        return self.config.get("main", "aws_secret_access_key")
-
-    @property
-    def aws_image_id(self):
-        return self.config.get("main", "aws_image_id")
-
-    @property
-    def aws_key_name(self):
-        return self.config.get("main", "aws_key_name")
-
-    @property
-    def aws_instance_type(self):
-        return self.config.get("main", "aws_instance_type")
-
-    @property
-    def aws_security_group(self):
-        return self.config.get("main", "aws_security_group")
-
-    @property
-    def aws_user(self):
-        return self.config.get("main", "aws_user")
 
     @property
     def saltmaster(self):
@@ -76,3 +41,12 @@ class ConfigOps:
         nodes = self.all_hadoop_nodes
         nodes.append(self.saltmaster)
         return nodes
+
+    @property
+    def key_location(self):
+        return self.config.get("main", "key_location")
+
+    @property
+    def user(self):
+        return self.config.get("main", "user")
+

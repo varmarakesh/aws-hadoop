@@ -1,0 +1,124 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation Template for Hadoop Cluster",
+  "Parameters": {
+  },
+  
+  "Resources": {
+    "EC2Instance1": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "SecurityGroups": [
+          {
+            "Ref": "HadoopSecurityGroup"
+          }
+        ],
+        "KeyName": "testkey",
+        "ImageId": "ami-a9d276c9",
+        "Tags" : [
+            {"Key" : "Name", "Value" : "namenode"},
+        ]
+      },
+     },
+    "EC2Instance2": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "SecurityGroups": [
+          {
+            "Ref": "HadoopSecurityGroup"
+          }
+        ],
+        "KeyName": "testkey",
+        "ImageId": "ami-a9d276c9",
+        "Tags" : [
+            {"Key" : "Name", "Value" : "secondarynamenode"},
+        ]
+      },
+     },
+    "EC2Instance3": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "SecurityGroups": [
+          {
+            "Ref": "HadoopSecurityGroup"
+          }
+        ],
+        "KeyName": "testkey",
+        "ImageId": "ami-a9d276c9",
+        "Tags" : [
+            {"Key" : "Name", "Value" : "datanode1"},
+        ]
+      },
+     },
+     "EC2Instance4": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "SecurityGroups": [
+          {
+            "Ref": "HadoopSecurityGroup"
+          }
+        ],
+        "KeyName": "testkey",
+        "ImageId": "ami-a9d276c9",
+        "Tags" : [
+            {"Key" : "Name", "Value" : "datanode2"},
+        ]
+      },
+     },
+     "EC2Instance5": {
+      "Type": "AWS::EC2::Instance",
+      "Properties": {
+        "InstanceType": "t2.micro",
+        "SecurityGroups": [
+          {
+            "Ref": "HadoopSecurityGroup"
+          }
+        ],
+        "KeyName": "testkey",
+        "ImageId": "ami-a9d276c9",
+        "Tags" : [
+            {"Key" : "Name", "Value" : "saltmaster"},
+        ]
+      },
+     },
+    "HadoopSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Enable access for management (SSH), salt and hadoop. Port 22 is used for ssh, 4500-4600 is for salt master and minion, 8000-8100 is used by hdfs, 50000-51000 is used by hadoop processes",
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8000",
+            "ToPort": "8100",
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "4500",
+            "ToPort": "4600",
+            "CidrIp" : "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "50000",
+            "ToPort": "51000",
+            "CidrIp" : "0.0.0.0/0"
+          }
+        ]
+      },
+    }
+  },
+  "Outputs": {
+  },
+ 
+}

@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 
 *.ini
 d]
+=======
+*.py[cod]
+>>>>>>> master
 
 # C extensions
 *.so
@@ -38,4 +42,7 @@ nosetests.xml
 .pydevproject
 .idea
 env/
+<<<<<<< HEAD
 
+=======
+>>>>>>> master

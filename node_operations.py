@@ -1,5 +1,7 @@
 __author__ = 'rakesh.varma'
 from ConfigParser import SafeConfigParser
+import os
+
 class Node:
     name = None
     ip_address = None
@@ -17,7 +19,8 @@ class HadoopCluster:
 
     def __init__(self):
         config = SafeConfigParser()
-        config.read('aws_hadoop.hosts')
+        file_path = os.path.join(os.path.dirname(__file__), 'aws_hadoop.hosts')
+        config.read(file_path)
         for item in config.items("main"):
             name = item[0]
             private_ip_address = eval(item[1])['private_ip_address']

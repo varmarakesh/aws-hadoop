@@ -3,14 +3,16 @@ from config_operations import *
 from node_operations import *
 import time
 from fabric_helper import *
-
+from hadoop_cluster import *
 c = ConfigOps()
 
 
 @task
 def create_aws_hadoop_cluster():
-    local('python hadoop_cluster.py')
-
+    h = hadoop_cluster()
+    h.pre_checks()
+    h.create_instances()
+    h.post_checks()
 @task
 def update_config():
     from ConfigParser import SafeConfigParser
@@ -110,11 +112,12 @@ def install_jdk_hadoop_nodes():
 
 @task
 def install_hadoop_packages():
+    mirror_site = "http://mirror.nexcess.net/apache/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz"
     hadoop_cluster = HadoopCluster()
     env.host_string = hadoop_cluster.getNode(c.saltmaster).ip_address
     env.user = c.aws_user
     env.key_filename = c.aws_key_location
-    sudo('salt "*" cmd.run "wget http://apache.mirror.gtcomm.net/hadoop/common/current/hadoop-2.7.1.tar.gz -P /home/ubuntu"')
+    sudo('salt "*" cmd.run "wget {0} -P /home/ubuntu"'.format(mirror_site))
     sudo('salt "*" cmd.run "tar -xzvf /home/ubuntu/hadoop-2.7.1.tar.gz -C /home/ubuntu"')
     sudo('salt "*" cmd.run "mv /home/ubuntu/hadoop-2.7.1 /home/ubuntu/hadoop"')
     sudo('salt "*" cmd.run "rm -rf /home/ubuntu/hadoop-2.7.1.tar.gz"')
@@ -240,7 +243,36 @@ def install_hive():
         cmd = "echo '{0}' >> /home/ubuntu/.bashrc".format("export PATH=$PATH:$HIVE_HOME/bin")
         run(cmd)
 
+@task
 
+def install_sqoop():
+    sqoop_mirror_site = 'http://mirror.symnds.com/software/Apache/sqoop/1.99.6/sqoop-1.99.6-bin-hadoop200.tar.gz'
+    hadoop_cluster = HadoopCluster()
+    env.host_string = hadoop_cluster.getNode(c.hadoop_namenode).ip_address
+    env.user = c.aws_user
+    env.key_filename = c.aws_key_location
+    run('wget {0}'.format(sqoop_mirror_site))
+    run('tar -xvf sqoop-1.99.6-bin-hadoop200.tar.gz')
+    sudo('mv sqoop-1.99.6-bin-hadoop200 /usr/lib/sqoop')
+    run('cd /usr/lib/sqoop')
+    cmd = "echo '{0}' >> /home/ubuntu/.bashrc".format("export SQOOP_HOME=/usr/lib/sqoop")
+    run(cmd)
+    cmd = "echo '{0}' >> /home/ubuntu/.bashrc".format("export PATH=$PATH:$SQOOP_HOME/bin")
+    run(cmd)
+
+@task
+
+def install_j():
+
+    env.host_string = '52.38.248.53'
+    env.user = 'ubuntu'
+    env.key_filename = '/Users/rakesh.varma/.ssh/ec2.pem'
+    with settings(warn_only = True):
+        sudo("apt-get update")
+        sudo("sudo add-apt-repository ppa:webupd8team/java")
+        sudo( "echo oracle-java7-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections")
+        sudo("sudo apt-get update && sudo apt-get install -y oracle-jdk7-installer")
+        sudo("sudo apt-get -f -y -q install")
 @task
 def provision_hadoop_cluster():
     #execute(create_aws_hadoop_cluster)

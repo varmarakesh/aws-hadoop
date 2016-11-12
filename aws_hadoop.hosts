@@ -1,7 +1,0 @@
-[main]
-hadoopnamenode = {'private_ip_address': u'172.31.27.11', 'dns_name': u'ec2-52-35-97-253.us-west-2.compute.amazonaws.com', 'ip_address': u'52.35.97.253'}
-hadoopsecondarynamenode = {'private_ip_address': u'172.31.27.12', 'dns_name': u'ec2-52-34-89-203.us-west-2.compute.amazonaws.com', 'ip_address': u'52.34.89.203'}
-hadoopdataslave1 = {'private_ip_address': u'172.31.27.14', 'dns_name': u'ec2-52-35-96-18.us-west-2.compute.amazonaws.com', 'ip_address': u'52.35.96.18'}
-hadoopdataslave2 = {'private_ip_address': u'172.31.27.13', 'dns_name': u'ec2-52-35-96-138.us-west-2.compute.amazonaws.com', 'ip_address': u'52.35.96.138'}
-saltmaster = {'private_ip_address': u'172.31.27.15', 'dns_name': u'ec2-52-35-96-215.us-west-2.compute.amazonaws.com', 'ip_address': u'52.35.96.215'}
-

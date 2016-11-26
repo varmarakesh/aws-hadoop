@@ -78,11 +78,11 @@ class hadoop:
         return self.config_dir + '/slaves'
 
     def install_hadoop_ubuntu(self):
-        mirror_site = "http://mirror.nexcess.net/apache/hadoop/common/hadoop-2.7.1/hadoop-2.7.1.tar.gz"
+        mirror_site = "http://mirror.nexcess.net/apache/hadoop/common/hadoop-2.7.1/hadoop-2.7.3.tar.gz"
         sudo('salt "*" cmd.run "wget {0} -P /home/ubuntu"'.format(mirror_site))
-        sudo('salt "*" cmd.run "tar -xzvf /home/ubuntu/hadoop-2.7.1.tar.gz -C /home/ubuntu"')
-        sudo('salt "*" cmd.run "mv /home/ubuntu/hadoop-2.7.1 /home/ubuntu/hadoop"')
-        sudo('salt "*" cmd.run "rm -rf /home/ubuntu/hadoop-2.7.1.tar.gz"')
+        sudo('salt "*" cmd.run "tar -xzvf /home/ubuntu/hadoop-2.7.3.tar.gz -C /home/ubuntu"')
+        sudo('salt "*" cmd.run "mv /home/ubuntu/hadoop-2.7.3 /home/ubuntu/hadoop"')
+        sudo('salt "*" cmd.run "rm -rf /home/ubuntu/hadoop-2.7.3.tar.gz"')
         #changing the hadoop directory owner to ubuntu.
         sudo('salt "*" cmd.run "sudo chown -R ubuntu /home/ubuntu/hadoop"')
 

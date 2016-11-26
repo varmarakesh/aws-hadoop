@@ -31,9 +31,9 @@ Once all the AWS Resources are setup the next step is to provision hadoop cluste
 Provision Hadoop Cluster
 ----------------------------------
 
-1. clone the git project
+1. Clone the git project
     ```
-git clone https://github.com/varmarakesh/aws-hadoop
+    git clone https://github.com/varmarakesh/aws-hadoop
     ```
     
 2. Install the python libraries (suggest using virtualenv for setting up python libraries)

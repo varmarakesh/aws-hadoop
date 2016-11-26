@@ -3,7 +3,6 @@ aws-hadoop
 Python project that automates the creation of hadoop cluster.
 
  - AWS Cloudformation is used to create all the AWS resources.
- - Once AWS resources are created, config.ini needs to be updated to include the AWS EC2 dns names for hadoop nodes and salt.
  - Salt is used for configuration management. It is a used a distributed remote execution system to apply commands on hadoop nodes.
  - Python fabric is used to provide a friendly command line interface to run various tasks.
 
@@ -55,7 +54,13 @@ git clone https://github.com/varmarakesh/aws-hadoop
 4. Now in aws-hadoop/aws-hadoop, run
 
     ```
-        fab hadoop.provision_hadoop_cluster
+    fab \
+	hadoop.keys:\
+		aws_access_key_id='******',\
+		aws_secret_access_key='*********',\
+		aws_security_token='*******',\
+		aws_key_location="/mydir/testkey.pem" \
+	hadoop.provision_hadoop_cluster
     ```
 
 Compatibility

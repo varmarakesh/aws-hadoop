@@ -1,10 +1,6 @@
-<<<<<<< HEAD
+*.log
 
-*.ini
-d]
-=======
-*.py[cod]
->>>>>>> master
+*.py[codt]
 
 # C extensions
 *.so
@@ -23,7 +19,6 @@ develop-eggs
 .installed.cfg
 lib
 lib64
-__pycache__
 
 # Installer logs
 pip-log.txt
@@ -40,9 +35,32 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
-.idea
-env/
-<<<<<<< HEAD
 
-=======
->>>>>>> master
+# Complexity
+output/*.html
+output/*/index.html
+
+# Sphinx
+docs/_build
+
+.webassets-cache
+
+# Virtualenvs
+env
+env*
+venv
+
+# intellij
+*.ipr
+*.iml
+*.iws
+
+
+
+.DS_Store
+
+# node
+node_modules/
+
+# bower packages
+.sass-cache/

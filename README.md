@@ -52,17 +52,18 @@ Provision Hadoop Cluster
 		aws_access_key_id='******',\
 		aws_secret_access_key='*********',\
 		aws_security_token='*******',\
-		aws_key_location="/mydir/testkey.pem" \
-		cloud_formation_stack='hadoop-stack' \
+		aws_key_location="/mydir/testkey.pem",\
+		cloud_formation_stack='hadoop-stack'\
 	hadoop.provision_hadoop_cluster
     ```
 
 Compatibility
 -------------
-So far, this has been successfully tested on the following platforms.
+So far, this has been successfully tested on the following platforms. Make sure git, python 2.7, pip and virtualenv are installed.
 
-mac osx 10.9
-ubuntu server 16.04
+ - mac osx 10.9
+ - ubuntu server 16.04
+ - rhel 7.3
 
 Licence
 -------

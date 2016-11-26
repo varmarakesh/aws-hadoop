@@ -20,22 +20,16 @@ Create AWS Resources
 
 To automate this step, follow these steps to use the cloud formation template.
 
- - Create a AWS keypair pem file that will allow you to ssh to AWS EC2
-   instances.
- - open aws-hadoop/aws-cloudformation-template/hadoop.json,  Replace
-   testkey with your AWS keypair. "KeyName": "testkey", The template has
-   5 ubuntu nodes (1 for saltmaster, 1 for hadoopnamenode, 1 for
-   secondarynamenode and 2 datanodes). Add more datanodes as required.
- - Once your template is ready, login to AWS management console, go to
-   cloud formation, create stack and upload the template to create the
-   hadoop cluster. Verify that all the ubuntu nodes are created.
+ - Create a AWS keypair pem file that will allow you to ssh to AWS EC2 instances.
+ - Open aws-hadoop/aws-cloudformation-template/hadoop.json,  Replace testkey with your AWS keypair. "KeyName": "testkey", The template has 5 ubuntu nodes (1 for saltmaster, 1 for hadoopnamenode, 1 for secondarynamenode and 2 datanodes). Add more datanodes as required.
+ - Once your template is ready, login to AWS management console, go to cloud formation, create stack and upload the template to create the hadoop cluster.
+ - Verify that all the ubuntu nodes are created.
 
 ![AWS Cloud Formation](docs/aws-cloud-formation.png)
 
 Once all the AWS Resources are setup the next step is to provision hadoop cluster.
 Provision Hadoop Cluster
 ----------------------------------
-
 
 1. clone the git project
     ```
@@ -50,8 +44,7 @@ git clone https://github.com/varmarakesh/aws-hadoop
         pip install -r requirements.txt
     ```
     
-3.  Edit the config.ini file to specify the ip's or public dns names of saltmaster, hadoop namenode, hadoop secondary namenode and hadoop datanodes. Assuming there is a key based login, also specify the key location.
-4. Now in aws-hadoop/aws-hadoop, run
+3. Now in aws-hadoop/aws-hadoop, run the fab command by specifying aws keys, key_location and cloud formation stack name. Various Fabric tasks will run to complete the hadoop provisioning.
 
     ```
     fab \
@@ -60,6 +53,7 @@ git clone https://github.com/varmarakesh/aws-hadoop
 		aws_secret_access_key='*********',\
 		aws_security_token='*******',\
 		aws_key_location="/mydir/testkey.pem" \
+		cloud_formation_stack='hadoop-stack' \
 	hadoop.provision_hadoop_cluster
     ```
 
@@ -76,4 +70,5 @@ Licence
 Authors
 -------
 
-`aws-hadoop` was written by `Rakesh Varma <varma.rakesh@gmail.com>`_.
+`aws-hadoop` was written by `Rakesh Varma <varma.rakesh@gmail.com>`
+

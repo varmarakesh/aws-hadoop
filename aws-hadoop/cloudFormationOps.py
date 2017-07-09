@@ -40,12 +40,11 @@ class hadoop_cluster:
 
 class cf:
 
-    def __init__(self, aws_access_key_id, aws_secret_access_key, security_token):
+    def __init__(self, aws_access_key_id, aws_secret_access_key):
         self.aws_access_key_id = aws_access_key_id
         self.aws_secret_access_key = aws_secret_access_key
-        self.security_token = security_token
-        self.cf = cloudformation.connect_to_region(region_name = 'us-west-2', aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key, security_token = security_token)
-        self.ec2 = ec2.connect_to_region('us-west-2', aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key, security_token = security_token)
+        self.cf = cloudformation.connect_to_region(region_name = 'us-west-2', aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key)
+        self.ec2 = ec2.connect_to_region('us-west-2', aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key)
 
     def get_instance_by_id(self, id):
         for instance in self.ec2.get_only_instances():

@@ -10,7 +10,7 @@ import time
 
 @task
 def keys(aws_access_key_id, aws_secret_access_key, aws_key_location, cloud_formation_stack, aws_security_token = None):
-    c = cf(aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key, security_token = aws_security_token)
+    c = cf(aws_access_key_id = aws_access_key_id, aws_secret_access_key = aws_secret_access_key)
     instances =  c.get_stack_resources(cloud_formation_stack)
     env.cluster = hadoop_cluster(instances = instances)
     env.h = hadoop(namenode = env.cluster.namenode, secondaryNamenode = env.cluster.secondarynamenode, dataNodes = env.cluster.datanodes)

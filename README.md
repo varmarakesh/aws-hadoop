@@ -47,14 +47,8 @@ Provision Hadoop Cluster
 3. Now in aws-hadoop/aws-hadoop, run the fab command by specifying aws keys, key_location and cloud formation stack name. Various Fabric tasks will run to complete the hadoop provisioning.
 
     ```
-    fab \
-	hadoop.keys:\
-		aws_access_key_id='******',\
-		aws_secret_access_key='*********',\
-		aws_security_token='*******',\
-		aws_key_location="/mydir/testkey.pem",\
-		cloud_formation_stack='hadoop-stack'\
-	hadoop.provision_hadoop_cluster
+    fab hadoop.keys:aws_access_key_id='*******',aws_secret_access_key='**********',aws_key_location="/Users/someuser/.ssh/testkey.pem",cloud_formation_stack='hadoop-stack' hadoop.provision_hadoop_cluster
+
     ```
 
 Compatibility

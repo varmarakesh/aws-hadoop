@@ -15,7 +15,7 @@
           }
         ],
         "KeyName": "testkey",
-        "ImageId": "ami-a9d276c9",
+        "ImageId": "ami-835b4efa",
         "Tags" : [
             {"Key" : "Name", "Value" : "namenode"},
         ]
@@ -31,7 +31,7 @@
           }
         ],
         "KeyName": "testkey",
-        "ImageId": "ami-a9d276c9",
+        "ImageId": "ami-835b4efa",
         "Tags" : [
             {"Key" : "Name", "Value" : "secondarynamenode"},
         ]
@@ -47,7 +47,7 @@
           }
         ],
         "KeyName": "testkey",
-        "ImageId": "ami-a9d276c9",
+        "ImageId": "ami-835b4efa",
         "Tags" : [
             {"Key" : "Name", "Value" : "datanode1"},
         ]
@@ -63,7 +63,7 @@
           }
         ],
         "KeyName": "testkey",
-        "ImageId": "ami-a9d276c9",
+        "ImageId": "ami-835b4efa",
         "Tags" : [
             {"Key" : "Name", "Value" : "datanode2"},
         ]
@@ -79,7 +79,7 @@
           }
         ],
         "KeyName": "testkey",
-        "ImageId": "ami-a9d276c9",
+        "ImageId": "ami-835b4efa",
         "Tags" : [
             {"Key" : "Name", "Value" : "saltmaster"},
         ]

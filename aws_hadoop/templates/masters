@@ -1,0 +1,2 @@
+{{ hadoop.namenode }}
+{{ hadoop.secondarynamenode }}

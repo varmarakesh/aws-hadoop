@@ -1,0 +1,7 @@
+include README.md
+include requirements.txt
+recursive-include aws_hadoop/terraform *
+recursive-include aws_hadoop/templates *
+prune aws_hadoop/terraform/.terraform/*
+prune aws_hadoop/terraform/*.backup
+prune aws_hadoop/terraform/*.tfstate

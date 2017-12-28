@@ -1,0 +1,6 @@
+jinja2
+coverage
+pypi-publisher
+python-terraform
+fabric
+pep8

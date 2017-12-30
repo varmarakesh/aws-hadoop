@@ -19,10 +19,13 @@ class FabricContext(object):
 
 class ClusterOps(object):
 
-    def __init__(self, ip_address, user, context, logger=None):
-        env.use_ssh_config = True
+    def __init__(self, ip_address, ssh_user, ssh_use_ssh_config, ssh_proxy, ssh_keyfile, context, logger=None):
+        env.use_ssh_config = ssh_use_ssh_config
         env.host_string = ip_address
-        env.user = user
+        env.user = ssh_user
+        env.key_filename = ssh_keyfile
+        env.gateway = ssh_proxy
+
         self.context = context
         self.logger = logger or logging.getLogger(__name__)
 

@@ -165,6 +165,46 @@ class ConfigFactory(object):
             )
             return 2
 
+    @property
+    def ssh_use_ssh_config(self):
+        try:
+            return self.config.get(
+                section=self.section,
+                option='ssh_use_ssh_config'
+            )
+        except NoOptionError:
+            return None
+
+    @property
+    def ssh_user(self):
+        try:
+            return self.config.get(
+                section=self.section,
+                option='ssh_user'
+            )
+        except NoOptionError:
+            return None
+
+    @property
+    def ssh_keyfile(self):
+        try:
+            return self.config.get(
+                section=self.section,
+                option='ssh_keyfile'
+            )
+        except NoOptionError:
+            return None
+
+    @property
+    def ssh_proxy(self):
+        try:
+            return self.config.get(
+                section=self.section,
+                option='ssh_proxy'
+            )
+        except NoOptionError:
+            return None
+
     def get_tf_vars(self):
         tf_vars = {
             'ssh_private_key': self.ssh_private_key,

@@ -1,4 +1,4 @@
-Create Enterprise grade Hadoop cluster in AWS in minutes.
+Create Enterprise grade Hadoop cluster in AWS.
 ===============================
 
 author: Rakesh Varma
@@ -11,7 +11,7 @@ Create enterprise grade hadoop cluster in AWS in minutes.
 Installation / Usage
 --------------------
 
-Make sure [terraform](https://www.terraform.io/intro/getting-started/install.html) is installed. It is a dependency.
+Make sure [terraform](https://www.terraform.io/intro/getting-started/install.html) is installed. It is required to run this solution.
 
 Make sure AWS credentials exists in your local `~/.aws/credentials` file. 
 If you are using an `AWS_PROFILE` called `test` then your `credentials` file should like looks this:
@@ -50,8 +50,22 @@ hadoop_replication_factor = 2
 Once `config.ini` file is ready then install the libs and run. It is recommended to use a virtualenv.
 
 ```
-   pip install -r requirements.txt
-   python run.py
+   pip install aws-hadoop
+```
+Run this in python to create a hadoop cluster.
+```
+from aws_hadoop.install import Install
+Install().create()
+```
+
+For running the source directly,
+
+```sh
+pip install -r requirements.txt
+```
+```sh
+from aws_hadoop.install import Install
+Install().create()
 ```
 
 ### Configuration Settings
@@ -103,6 +117,21 @@ Specify the number of hadoop data nodes that should be created. It not specified
 
 Specify the replication factor of hadoop. It not specified then the default value is set to 2.
 
-###Logging
+The following are ssh settings, used to ssh into the nodes.
+
+##### ssh_user (optional)
+The ssh user, eg: ubuntu
+
+##### ssh_use_ssh_config (optional)
+Set it to True if you want to use your settings in your `~/.ssh/config`
+
+##### ssh_key_file (optional)
+This is the key file location. SSH login is done thru a private/public key pair.
+
+##### ssh_proxy (optional)
+Use this setting if you are using a proxy ssh server (such as bastion).
+
+Logging
+------
 
 A log file `hadoop-cluster.log` is created in the local directory.

@@ -47,7 +47,10 @@ class Install(object):
         )
         namenode = ClusterOps(
             ip_address=self.tf.hadoop_namenode_ip,
-            user='ubuntu',
+            ssh_user=self.config.ssh_user,
+            ssh_keyfile=self.config.ssh_keyfile,
+            ssh_use_ssh_config=self.config.ssh_use_ssh_config,
+            ssh_proxy=self.config.ssh_proxy,
             context=ctx,
             logger=self.logger
         )
@@ -63,7 +66,10 @@ class Install(object):
         self.logger.info(msg='Connecting to Hadoop SecondaryNamenode - {0} for applying the templates'.format(self.tf.hadoop_secondarynamenode_ip))
         secondarynamenode = ClusterOps(
             ip_address=self.tf.hadoop_secondarynamenode_ip,
-            user='ubuntu',
+            ssh_user=self.config.ssh_user,
+            ssh_keyfile=self.config.ssh_keyfile,
+            ssh_use_ssh_config=self.config.ssh_use_ssh_config,
+            ssh_proxy=self.config.ssh_proxy,
             context=ctx,
             logger=self.logger
         )
@@ -79,7 +85,10 @@ class Install(object):
             self.logger.info(msg='Connecting to Hadoop Datanode - {0} for applying the templates'.format(datanode))
             slave = ClusterOps(
                 ip_address=datanode,
-                user='ubuntu',
+                ssh_user=self.config.ssh_user,
+                ssh_keyfile=self.config.ssh_keyfile,
+                ssh_use_ssh_config=self.config.ssh_use_ssh_config,
+                ssh_proxy=self.config.ssh_proxy,
                 context=ctx,
                 logger=self.logger
             )
@@ -93,7 +102,10 @@ class Install(object):
         self.logger.info(msg='Connecting to Hadoop Namenode - {0} for formatting DFS and starting cluster'.format(self.tf.hadoop_namenode_ip))
         namenode = ClusterOps(
             ip_address=self.tf.hadoop_namenode_ip,
-            user='ubuntu',
+            ssh_user=self.config.ssh_user,
+            ssh_keyfile=self.config.ssh_keyfile,
+            ssh_use_ssh_config=self.config.ssh_use_ssh_config,
+            ssh_proxy=self.config.ssh_proxy,
             context=ctx,
             logger=self.logger
         )

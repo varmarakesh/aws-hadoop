@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.0.4'
+__version__ = '1.0dev2'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -18,12 +18,12 @@ install_requires = [x.strip() for x in all_reqs if 'git+' not in x]
 dependency_links = [x.strip().replace('git+', '') for x in all_reqs if x.startswith('git+')]
 
 setup(
-    name='aws_hadoop',
+    name='aws-hadoop',
     version=__version__,
     description='Create enterprise grade Hadoop cluster in AWS in minutes.',
     long_description=long_description,
-    url='https://github.com/varmarakesh/aws_hadoop',
-    download_url='https://github.com/varmarakesh/aws_hadoop/tarball/' + __version__,
+    url='https://github.com/varmarakesh/aws-hadoop',
+    download_url='https://github.com/varmarakesh/aws-hadoop/tarball/' + __version__,
     license='BSD',
     classifiers=[
       'Development Status :: 3 - Alpha',
@@ -31,7 +31,7 @@ setup(
       'Programming Language :: Python :: 2.7',
     ],
     keywords='',
-    packages=find_packages(exclude=['docs', 'tests*']),
+    packages=find_packages(exclude=['docs', 'tests*', '*tfstate*']),
     include_package_data=True,
     author='Rakesh Varma',
     install_requires=install_requires,

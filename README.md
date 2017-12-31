@@ -8,6 +8,14 @@ Overview
 
 Create enterprise grade hadoop cluster in AWS in minutes.
 
+Using this solution as one-stop shop to create AWS resources needed for hadoop (ec2, security groups) and setup a cluster with Hadoop namenode, secondarynamenode and any number of data nodes.
+
+The ec2 nodes use:
+
+* ubuntu - 16.04.3 LTS
+* hadoop - 2.9.0
+* java - 8
+
 Installation / Usage
 --------------------
 
@@ -72,19 +80,19 @@ Install().create()
 
 This section describes each of the settings that go into the config file. Note some of the settings are optional.
 
-######aws_region
+###### aws_region
 
 The aws_region where your terraform state bucket and your hadoop resources get created (eg: us-east-1)
 
-#####aws_profile
+##### aws_profile
 
 The aws_profile that is used in your local `~/.aws/credentials` file.
 
-#####terraform_s3_bucket
+##### terraform_s3_bucket
 
 The terraform state information will be maintained in the specified s3 bucket. Make sure the aws_profile has write access to the s3 bucket.
 
-#####ssh_key_pair
+##### ssh_key_pair
 
 For hadoop provisioning, aws_hadoop needs to connect to hadoop nodes using SSH. The specified `ssh_key_pair` will allow the hadoop ec2's to be created with the public key.
 If So make sure your machine has the private key in your `~/.ssh/` directory.
